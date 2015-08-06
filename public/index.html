@@ -3,26 +3,35 @@
   <title>Github Milestones</title>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-
+  <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
   <script>
 
   $(function() {
 
     $("#gitform").submit(function() {
 
-        var url = "/getMilestones"; // the script where you handle the form input.
+        var url = "/getMilestones";
 
         $.ajax({
                type: "POST",
                url: url,
-               data: $("#gitform").serialize(), // serializes the form's elements.
+               data: $("#gitform").serialize(),
                success: function(data)
                {
-                   alert(data); // show response from the php script.
+                   var parsed = JSON.parse(data);
+
+                   var thetable = $('<table></table>');
+                   for (var i = 0; i < parsed.length; i++) {
+                     var thetr = $('<tr></tr>');
+                     var thetd = $('<td>' + parsed[i].title + '</td><td>' + parsed[i].closed_at + '</td>');
+                     thetr.append(thetd);
+                     thetable.append(thetr);
+                   }
+                   $('body').append(thetable);
                }
              });
 
-        return false; // avoid to execute the actual submit of the form.
+        return false;
     });
 
   });
@@ -33,8 +42,12 @@
 <body>
   <h1>Let's get those Github Milestones!</h1>
   <form id='gitform'>
-    <input type="text" name="url" placeholder="enter a github url here">
+    <input type="text" name="user" placeholder="enter a github username here">
+    <input type="text" name="repo" placeholder="enter a repo name here">
     <input type="submit" value="Submit">
   </form>
+
+  <table id='results'>
+  </table>
 </body>
 </html>

@@ -8,6 +8,8 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
+var GitHubApi = require('github');
+
 var app = express();
 
 // view engine setup
@@ -30,7 +32,37 @@ app.use('/users', users);
 app.post('/getMilestones', function(req, res) {
 
   console.log(req.body);
-  res.send('here it is');
+
+  var github = new GitHubApi({
+      // required
+      version: "3.0.0",
+      // optional
+      debug: true,
+      protocol: "https",
+      timeout: 5000
+  });
+
+  github.issues.getAllMilestones({
+    user: req.body.user,
+    repo: req.body.repo,
+    state: 'closed'
+  }, function(err, result) {
+    console.log('found ' + result.length + ' results');
+
+    var responseArray = [];
+    for (var i = 0; i < result.length; i++) {
+      responseArray.push({
+        title: result[i].title,
+        closed_at: result[i].closed_at
+      })
+    }
+
+    responseArray.sort(function(a, b) {
+      return new Date(b.closed_at) - new Date(a.closed_at);
+    })
+
+    res.send(JSON.stringify(responseArray));
+  });
 
 });
 
