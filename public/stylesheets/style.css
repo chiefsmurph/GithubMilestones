@@ -17,3 +17,31 @@ input[type='submit'] {
   line-height: 50px;
   margin: 0 10px;
 }
+table {
+    border-collapse:collapse;
+    table-layout: fixed;
+}
+thead th:nth-child(2), thead th:nth-child(3) {
+   -moz-transform: rotate(-90deg);  /* FF3.5+ */
+   -o-transform: rotate(-90deg);  /* Opera 10.5 */
+   -webkit-transform: rotate(-90deg);  /* Saf3.1+, Chrome */
+   filter:  progid:DXImageTransform.Microsoft.BasicImage(rotation=3);  /* IE6,IE7 */
+   -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=3)"; /* IE8 */
+   vertical-align: bottom;
+   padding: 15px 0;
+   border: 1px solid black;
+   height: 50px;
+}
+
+tr td {
+  border: 1px solid grey;
+  min-height: 15px;
+}
+tr td:first-child {
+  width: 450px;
+  overflow: hidden;
+}
+tr td:nth-child(2) {
+  width: 700px;
+  min-width: 700px;
+}

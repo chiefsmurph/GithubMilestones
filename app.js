@@ -53,7 +53,7 @@ app.post('/getMilestones', function(req, res) {
     for (var i = 0; i < result.length; i++) {
       responseArray.push({
         title: result[i].title,
-        closed_at: result[i].closed_at
+        closed_at: result[i].closed_at.split('T')[0]
       })
     }
 

@@ -8,6 +8,46 @@
 
   $(function() {
 
+    var daydiff = function(first, second) {
+        return Math.abs((second-first)/(1000*60*60*24));
+    }
+
+    var getDateHeaders = function(data) {
+
+      var startDate = new Date(data[0].closed_at);
+      var endDate = new Date(data[data.length-1].closed_at);
+
+      return {
+
+        startDate: startDate.toISOString().slice(0, 10),
+        endDate: endDate.toISOString().slice(0, 10),
+        maxDaysBetween: daydiff(startDate, endDate)
+      };
+    };
+
+    var getXPos = function(curDate, headers, maxWidth) {
+
+      return daydiff(new Date(headers.startDate), new Date(curDate)) / headers.maxDaysBetween * (maxWidth-10) ;
+
+    };
+
+    var renderTable = function(data, headers) {
+      var thetable = $('<table></table>');
+
+      thetable.append('<thead><tr><th>milestone</th><th>' + headers.startDate + '</th><th>' + headers.endDate + '</th></tr></thead>');
+
+      for (var i = 0; i < data.length; i++) {
+        var thetr = $('<tr></tr>');
+        var thetitle = $('<td>' + data[i].title + '</td>');
+        var theX = $('<td colspan=2></td>');
+        theX.append('<span style="position: relative; left: ' + getXPos(data[i].closed_at, headers, 700) + 'px">X</span>');
+        thetr.append(thetitle);
+        thetr.append(theX);
+        thetable.append(thetr);
+      }
+      $('body').append(thetable);
+    };
+
     $("#gitform").submit(function() {
 
         var url = "/getMilestones";
@@ -19,15 +59,7 @@
                success: function(data)
                {
                    var parsed = JSON.parse(data);
-
-                   var thetable = $('<table></table>');
-                   for (var i = 0; i < parsed.length; i++) {
-                     var thetr = $('<tr></tr>');
-                     var thetd = $('<td>' + parsed[i].title + '</td><td>' + parsed[i].closed_at + '</td>');
-                     thetr.append(thetd);
-                     thetable.append(thetr);
-                   }
-                   $('body').append(thetable);
+                   renderTable(parsed, getDateHeaders(parsed) );
                }
              });
 
