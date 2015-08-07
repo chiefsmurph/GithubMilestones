@@ -57,7 +57,7 @@ app.post('/getMilestones', function(req, res) {
       })
     }
 
-    responseArray.sort(function(a, b) {
+    responseArray.sort(function(b, a) {
       return new Date(b.closed_at) - new Date(a.closed_at);
     })
 

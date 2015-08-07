@@ -16,12 +16,24 @@
 
       var startDate = new Date(data[0].closed_at);
       var endDate = new Date(data[data.length-1].closed_at);
+      var maxDaysBetween = daydiff(startDate, endDate);
+
+      var middlePt = new Date();
+      middlePt.setDate(startDate.getDate() + Math.floor(maxDaysBetween/2));
+
+      var quarter = new Date();
+      quarter.setDate(startDate.getDate() + Math.floor(maxDaysBetween/4))
+
+      var threequarters = new Date();
+      quarter.setDate(middlePt.getDate() + Math.floor(maxDaysBetween/4))
 
       return {
-
         startDate: startDate.toISOString().slice(0, 10),
         endDate: endDate.toISOString().slice(0, 10),
-        maxDaysBetween: daydiff(startDate, endDate)
+        middlePt: middlePt.toISOString().slice(0, 10),
+        quarter: quarter.toISOString().slice(0, 10),
+        threequarters: threequarters.toISOString().slice(0, 10),
+        maxDaysBetween: maxDaysBetween
       };
     };
 
@@ -34,13 +46,13 @@
     var renderTable = function(data, headers) {
       var thetable = $('<table></table>');
 
-      thetable.append('<thead><tr><th>milestone</th><th>' + headers.startDate + '</th><th>' + headers.endDate + '</th></tr></thead>');
+      thetable.append('<thead><tr><th>milestone</th><th>' + headers.startDate + '</th><th>' + headers.quarter + '</th><th>' + headers.middlePt + '</th><th>' + headers.threequarters + '</th><th>' + headers.endDate + '</th></tr></thead>');
 
       for (var i = 0; i < data.length; i++) {
         var thetr = $('<tr></tr>');
         var thetitle = $('<td>' + data[i].title + '</td>');
-        var theX = $('<td colspan=2></td>');
-        theX.append('<span style="position: relative; left: ' + getXPos(data[i].closed_at, headers, 700) + 'px">X</span>');
+        var theX = $('<td colspan=5></td>');
+        theX.append('<span data-tooltip="' + data[i].closed_at + '" style="position: relative; left: ' + getXPos(data[i].closed_at, headers, 700) + 'px">X</span>');
         thetr.append(thetitle);
         thetr.append(theX);
         thetable.append(thetr);
