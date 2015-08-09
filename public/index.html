@@ -128,10 +128,11 @@
                      $('#error_bar').hide();
                      $('#ganttArea').empty(); // removes previously generated tables (charts) from the dom
                      $('#ganttArea').hide(); // ...and prepares for slidedown
-                     
+
                      renderTable(parsed, getDateHeaders(parsed) );  // generates the gannt table
 
                      $('form#gitform').slideUp('slow', function() {
+                       $('#ganttArea').show();
                        $('#ganttArea').slideDown();
                      });
                    } else {
