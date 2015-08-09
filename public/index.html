@@ -129,12 +129,11 @@
 
                      // removes previously generated tables (charts) from the dom
                      $('#ganttArea').slideUp('slow', function() {
-                       $('#ganttArea').empty();
+                       $('#ganttArea').empty(); // emptys the ganttarea of previously generated tables
+                       renderTable(parsed, getDateHeaders(parsed) );  // generates the gannt table
+                       $('#ganttArea').slideDown(2000); // slidedown 2 sec
                      });
 
-                     renderTable(parsed, getDateHeaders(parsed) );  // generates the gannt table
-
-                     $('#ganttArea').slideDown(2000);
 
                    } else {
                      // error of some kind
