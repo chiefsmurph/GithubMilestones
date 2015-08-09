@@ -50,12 +50,13 @@
         return new Date(end);
 
       })();
+
       var maxDaysBetween = daydiff(startDate, endDate);
 
-      //
-      // var middlePt = new Date();
-      // middlePt.setDate(startDate.getDate() + Math.floor(maxDaysBetween/2));
-      //
+      var middlePt = new Date(startDate.getTime());
+      // middlePt.setDate(middlePt.getDate() + );
+      middlePt.setDate(middlePt.getDate() + Math.floor(maxDaysBetween/2));
+
       // var quarter = new Date();
       // quarter.setDate(startDate.getDate() + Math.floor(maxDaysBetween/4));
       //
@@ -65,7 +66,7 @@
       return {
         startDate: startDate.toISOString().slice(0, 10),
         endDate: endDate.toISOString().slice(0, 10),
-        // middlePt: middlePt.toISOString().slice(0, 10),
+        middlePt: middlePt.toISOString().slice(0, 10),
         // quarter: quarter.toISOString().slice(0, 10),
         // threequarters: threequarters.toISOString().slice(0, 10),
         maxDaysBetween: maxDaysBetween
@@ -81,12 +82,13 @@
     var renderTable = function(data, headers) {
 
       var thetable = $('<table></table>');
-      thetable.append('<thead><tr><th>milestone</th><th>' + headers.startDate + '</th><th>' + headers.endDate + '</th></tr></thead>');
+      thetable.append('<thead><tr><th>milestone</th><th>' + headers.startDate + '</th><th>' + headers.middlePt + '</th><th>' + headers.endDate + '</th></tr></thead>');
+      //thetable.append('<thead><tr><th>milestone</th><th>' + headers.startDate + '</th><th>' + headers.endDate + '</th></tr></thead>');
 
       for (var url in data) {
         if (data.hasOwnProperty(url)) {
 
-          thetable.append('<tr class="url-header"><td colspan=3>' + url + '</td></tr>');
+          thetable.append('<tr class="url-header"><td colspan=4>' + url + '</td></tr>');
 
           for (var i = 0; i < data[url].length; i++) {
 

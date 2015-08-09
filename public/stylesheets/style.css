@@ -27,9 +27,12 @@ table {
 thead {
   overflow: hidden;
   background-color: black;
+  color: white !important;
+}
+thead table {
   color: white;
 }
-thead th:nth-child(n+2) {
+thead th:nth-child(n+2) table td div {
    -moz-transform: rotate(-90deg);  /* FF3.5+ */
    -o-transform: rotate(-90deg);  /* Opera 10.5 */
    -webkit-transform: rotate(-90deg);  /* Saf3.1+, Chrome */
@@ -38,12 +41,17 @@ thead th:nth-child(n+2) {
    vertical-align: top;
    padding: 0;
    height: 150px;
+   text-align: center;
+}
+thead th {
+  padding: 10px auto;
+  height: 60px;
 }
 thead th:nth-child(2) {
-  vertical-align: top;
+  text-align: left;
 }
-thead th:nth-child(3) {
-  vertical-align: bottom;
+thead th:nth-child(4) {
+  text-align: right;
 }
 tr.url-header td {
   text-align: center;
@@ -51,7 +59,7 @@ tr.url-header td {
   font-weight: bold;
   padding: 5px auto;
 }
-tr td {
+table > tbody > tr > td {
   border: 1px solid grey;
   min-height: 15px;
 }
@@ -61,14 +69,36 @@ tr.odd {
 tr.even {
   background-color: #f0e7e7;
 }
-tr td:first-child {
+table > tbody > tr td:first-child {
   width: 450px;
   overflow: hidden;
 }
-tr td:nth-child(2) {
+table > tbody > tr td:nth-child(2) {
   width: 700px;
   min-width: 700px;
 }
+
+
+
+table thead table {
+    text-align:center;
+    white-space:nowrap;
+    transform: rotate(90deg);
+}
+table thead div p {
+    margin:0 -100% ;
+    display:inline-block;
+}
+table thead div p:before{
+    content:'';
+    width:0;
+    padding-top:110%;/* takes width as reference, + 10% for faking some extra padding */
+    display:inline-block;
+    vertical-align:middle;
+}
+
+
+
 
 #error_bar {
   color: red;
