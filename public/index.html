@@ -14,25 +14,60 @@
 
     var getDateHeaders = function(data) {
 
-      var startDate = new Date(data[0].closed_at);
-      var endDate = new Date(data[data.length-1].closed_at);
+      //var startDate = new Date(data[0].closed_at);
+      var startDate = (function() {
+
+        var start;
+
+        for (var url in data) {
+          if (data.hasOwnProperty(url)) {
+
+            if (!start || start > data[url][0].closed_at) {
+              start = data[url][0].closed_at;
+            }
+
+          }
+        }
+
+        return new Date(start);
+
+      })();
+      //var endDate = new Date(data[data.length-1].closed_at);
+      var endDate = (function() {
+
+        var end;
+
+        for (var url in data) {
+          if (data.hasOwnProperty(url)) {
+
+            if (!end || end < data[url][data[url].length-1].closed_at) {
+              end = data[url][data[url].length-1].closed_at;
+            }
+
+          }
+        }
+
+        return new Date(end);
+
+      })();
       var maxDaysBetween = daydiff(startDate, endDate);
 
-      var middlePt = new Date();
-      middlePt.setDate(startDate.getDate() + Math.floor(maxDaysBetween/2));
-
-      var quarter = new Date();
-      quarter.setDate(startDate.getDate() + Math.floor(maxDaysBetween/4))
-
-      var threequarters = new Date();
-      quarter.setDate(middlePt.getDate() + Math.floor(maxDaysBetween/4))
+      //
+      // var middlePt = new Date();
+      // middlePt.setDate(startDate.getDate() + Math.floor(maxDaysBetween/2));
+      //
+      // var quarter = new Date();
+      // quarter.setDate(startDate.getDate() + Math.floor(maxDaysBetween/4));
+      //
+      // var threequarters = new Date();
+      // quarter.setDate(middlePt.getDate() + Math.floor(maxDaysBetween/4));
 
       return {
         startDate: startDate.toISOString().slice(0, 10),
         endDate: endDate.toISOString().slice(0, 10),
-        middlePt: middlePt.toISOString().slice(0, 10),
-        quarter: quarter.toISOString().slice(0, 10),
-        threequarters: threequarters.toISOString().slice(0, 10),
+        // middlePt: middlePt.toISOString().slice(0, 10),
+        // quarter: quarter.toISOString().slice(0, 10),
+        // threequarters: threequarters.toISOString().slice(0, 10),
         maxDaysBetween: maxDaysBetween
       };
     };
@@ -44,20 +79,34 @@
     };
 
     var renderTable = function(data, headers) {
+
       var thetable = $('<table></table>');
+      thetable.append('<thead><tr><th>milestone</th><th>' + headers.startDate + '</th><th>' + headers.endDate + '</th></tr></thead>');
 
-      thetable.append('<thead><tr><th>milestone</th><th>' + headers.startDate + '</th><th>' + headers.quarter + '</th><th>' + headers.middlePt + '</th><th>' + headers.threequarters + '</th><th>' + headers.endDate + '</th></tr></thead>');
+      for (var url in data) {
+        if (data.hasOwnProperty(url)) {
 
-      for (var i = 0; i < data.length; i++) {
-        var thetr = $('<tr></tr>');
-        var thetitle = $('<td>' + data[i].title + '</td>');
-        var theX = $('<td colspan=5></td>');
-        theX.append('<span data-tooltip="' + data[i].closed_at + '" style="position: relative; left: ' + getXPos(data[i].closed_at, headers, 700) + 'px">X</span>');
-        thetr.append(thetitle);
-        thetr.append(theX);
-        thetable.append(thetr);
+          thetable.append('<tr class="url-header"><td colspan=3>' + url + '</td></tr>');
+
+          for (var i = 0; i < data[url].length; i++) {
+
+            var thetr = $('<tr class="' + ((i%2===0) ? 'odd' : 'even') + '"></tr>');
+            var thetitle = $('<td>' + data[url][i].title + '</td>');
+
+            var theX = $('<td colspan=3></td>');
+            theX.append('<span data-tooltip="' + data[url][i].closed_at + '" style="position: relative; left: ' + getXPos(data[url][i].closed_at, headers, 700) + 'px">X</span>');
+
+            thetr.append(thetitle);
+            thetr.append(theX);
+            thetable.append(thetr);
+
+          }
+
+
+        }
       }
-      $('body').append(thetable);
+
+      $('#ganttArea').append(thetable);
     };
 
     $("#gitform").submit(function() {
@@ -71,8 +120,24 @@
                success: function(data)
                {
                    console.log(data);
-                   var parsed = JSON.parse(data);
-                   renderTable(parsed, getDateHeaders(parsed) );
+                   if (data[0] === '{') {
+
+                     // converts json string to native js object
+                     var parsed = JSON.parse(data);
+
+                     $('#error_bar').hide();
+                     $('#ganttArea').empty(); // removes previously generated tables (charts) from the dom
+                     $('#ganttArea').hide(); // ...and prepares for slidedown
+                     
+                     renderTable(parsed, getDateHeaders(parsed) );  // generates the gannt table
+
+                     $('form#gitform').slideUp('slow', function() {
+                       $('#ganttArea').slideDown();
+                     });
+                   } else {
+                     // error of some kind
+                     $('#error_bar').text(data);
+                   }
                }
              });
 
@@ -87,11 +152,16 @@
 <body>
   <h1>Let's get those Github Milestones!</h1>
   <form id='gitform'>
+    Insert a list of github repositories (including the 'http(s)://github.com' prefix) seperated by newlines.<br>
     <textarea rows="10" cols="80" name='urls'></textarea>
     <input type="submit" value="Submit">
   </form>
 
-  <table id='results'>
-  </table>
+  <div id='error_bar'>
+  </div>
+
+  <div id='ganttArea'>
+  </div>
+
 </body>
 </html>

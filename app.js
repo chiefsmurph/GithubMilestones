@@ -36,7 +36,18 @@ app.post('/getMilestones', function(req, res) {
 
   var splitURLs = req.body.urls.split('\r\n');
 
-  var responseArray = [];
+  // remove empty URLs (extra carriage returns)
+  Array.prototype.clean = function(deleteValue) {
+    for (var i = 0; i < this.length; i++) {
+      if (this[i] == deleteValue) {
+        this.splice(i, 1);
+        i--;
+      }
+    }
+    return this;
+  };
+  splitURLs.clean('');
+
   var responseObj = {};
 
   async.each(splitURLs, function(url, callback) {
@@ -62,24 +73,35 @@ app.post('/getMilestones', function(req, res) {
         repo: repo,
         state: 'closed'
       }, function(err, result) {
-        console.log('found ' + result.length + ' results');
 
-        for (var i = 0; i < result.length; i++) {
-          responseArray.push({
-            title: result[i].title,
-            closed_at: result[i].closed_at.split('T')[0]
-          })
+        if (err) {
+
+          callback('error getting this repo: ' + user + '/' + repo + '. please try again.');
+
+        } else {
+
+          console.log('found ' + result.length + ' results');
+
+          var responseArray = [];
+
+          for (var i = 0; i < result.length; i++) {
+            responseArray.push({
+              title: result[i].title,
+              closed_at: result[i].closed_at.split('T')[0]
+            })
+          }
+
+          responseArray.sort(function(b, a) {
+            return new Date(b.closed_at) - new Date(a.closed_at);
+          });
+
+          responseObj[user + '/' + repo] = responseArray;
+
+
+          callback();
+
+
         }
-
-        responseArray.sort(function(b, a) {
-          return new Date(b.closed_at) - new Date(a.closed_at);
-        });
-
-        //responseObj[user + '/' + repo] = responseArray;
-
-
-        callback();
-
 
       });
 
@@ -92,19 +114,13 @@ app.post('/getMilestones', function(req, res) {
       // One of the iterations produced an error.
       // All processing will now stop.
       console.log('A file failed to process');
+      res.send(err);
     } else {
       console.log('All files have been processed successfully');
-      res.send(JSON.stringify(responseArray));
+      res.send(JSON.stringify(responseObj));
     }
 
   });
-
-
-  for (var i = 0; i < splitURLs.length; i++) {
-
-
-  }
-
 
 
 });

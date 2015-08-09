@@ -18,6 +18,7 @@ input[type='submit'] {
   margin: 0 10px;
 }
 table {
+    display: none;
     border-collapse:collapse;
     table-layout: fixed;
 }
@@ -33,13 +34,30 @@ thead th:nth-child(n+2) {
    filter:  progid:DXImageTransform.Microsoft.BasicImage(rotation=3);  /* IE6,IE7 */
    -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=3)"; /* IE8 */
    vertical-align: top;
-   padding: 15px 0;
+   padding: 0;
    height: 150px;
 }
-
+thead th:nth-child(2) {
+  vertical-align: top;
+}
+thead th:nth-child(3) {
+  vertical-align: bottom;
+}
+tr.url-header td {
+  text-align: center;
+  background-color: yellow;
+  font-weight: bold;
+  padding: 5px auto;
+}
 tr td {
   border: 1px solid grey;
   min-height: 15px;
+}
+tr.odd {
+  background-color: WhiteSmoke;
+}
+tr.even {
+  background-color: #f0e7e7;
 }
 tr td:first-child {
   width: 450px;
@@ -50,13 +68,9 @@ tr td:nth-child(2) {
   min-width: 700px;
 }
 
-
-
-
-
-
-
-
+#error_bar {
+  color: red;
+}
 
 
 
