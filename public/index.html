@@ -70,6 +70,7 @@
                data: $("#gitform").serialize(),
                success: function(data)
                {
+                   console.log(data);
                    var parsed = JSON.parse(data);
                    renderTable(parsed, getDateHeaders(parsed) );
                }
@@ -86,8 +87,7 @@
 <body>
   <h1>Let's get those Github Milestones!</h1>
   <form id='gitform'>
-    <input type="text" name="user" placeholder="enter a github username here">
-    <input type="text" name="repo" placeholder="enter a repo name here">
+    <textarea rows="10" cols="80" name='urls'></textarea>
     <input type="submit" value="Submit">
   </form>
 

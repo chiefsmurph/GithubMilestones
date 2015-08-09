@@ -9,6 +9,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 
 var GitHubApi = require('github');
+var async = require('async');
 
 var app = express();
 
@@ -33,36 +34,78 @@ app.post('/getMilestones', function(req, res) {
 
   console.log(req.body);
 
-  var github = new GitHubApi({
-      // required
-      version: "3.0.0",
-      // optional
-      debug: true,
-      protocol: "https",
-      timeout: 5000
-  });
+  var splitURLs = req.body.urls.split('\r\n');
 
-  github.issues.getAllMilestones({
-    user: req.body.user,
-    repo: req.body.repo,
-    state: 'closed'
-  }, function(err, result) {
-    console.log('found ' + result.length + ' results');
+  var responseArray = [];
+  var responseObj = {};
 
-    var responseArray = [];
-    for (var i = 0; i < result.length; i++) {
-      responseArray.push({
-        title: result[i].title,
-        closed_at: result[i].closed_at.split('T')[0]
-      })
+  async.each(splitURLs, function(url, callback) {
+
+
+      var user = url.split('/')[3];
+      var repo = url.split('/')[4];
+
+      console.log('user: ' + user);
+      console.log('repo: ' + repo);
+
+      var github = new GitHubApi({
+          // required
+          version: "3.0.0",
+          // optional
+          debug: true,
+          protocol: "https",
+          timeout: 5000
+      });
+
+      github.issues.getAllMilestones({
+        user: user,
+        repo: repo,
+        state: 'closed'
+      }, function(err, result) {
+        console.log('found ' + result.length + ' results');
+
+        for (var i = 0; i < result.length; i++) {
+          responseArray.push({
+            title: result[i].title,
+            closed_at: result[i].closed_at.split('T')[0]
+          })
+        }
+
+        responseArray.sort(function(b, a) {
+          return new Date(b.closed_at) - new Date(a.closed_at);
+        });
+
+        //responseObj[user + '/' + repo] = responseArray;
+
+
+        callback();
+
+
+      });
+
+
+
+
+  }, function(err) {
+
+    if( err ) {
+      // One of the iterations produced an error.
+      // All processing will now stop.
+      console.log('A file failed to process');
+    } else {
+      console.log('All files have been processed successfully');
+      res.send(JSON.stringify(responseArray));
     }
 
-    responseArray.sort(function(b, a) {
-      return new Date(b.closed_at) - new Date(a.closed_at);
-    })
-
-    res.send(JSON.stringify(responseArray));
   });
+
+
+  for (var i = 0; i < splitURLs.length; i++) {
+
+
+  }
+
+
 
 });
 
