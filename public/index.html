@@ -126,15 +126,16 @@
                      var parsed = JSON.parse(data);
 
                      $('#error_bar').hide();
-                     $('#ganttArea').empty(); // removes previously generated tables (charts) from the dom
-                     $('#ganttArea').hide(); // ...and prepares for slidedown
+
+                     // removes previously generated tables (charts) from the dom
+                     $('#ganttArea').slideUp('slow', function() {
+                       $('#ganttArea').empty();
+                     });
 
                      renderTable(parsed, getDateHeaders(parsed) );  // generates the gannt table
 
-                     $('form#gitform').slideUp('slow', function() {
-                       $('#ganttArea').show();
-                       $('#ganttArea').slideDown();
-                     });
+                     $('#ganttArea').slideDown();
+
                    } else {
                      // error of some kind
                      $('#error_bar').text(data);
