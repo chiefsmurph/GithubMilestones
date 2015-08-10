@@ -85,9 +85,10 @@ app.post('/getMilestones', function(req, res) {
           var responseArray = [];
 
           for (var i = 0; i < result.length; i++) {
+            console.log('result i closed at ', result[i]);
             responseArray.push({
               title: result[i].title,
-              closed_at: result[i].closed_at.split('T')[0]
+              closed_at: result[i].due_on.split('T')[0]
             })
           }
 
