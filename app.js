@@ -71,7 +71,7 @@ app.post('/getMilestones', function(req, res) {
       github.issues.getAllMilestones({
         user: user,
         repo: repo,
-        state: 'all'
+        state: 'closed'
       }, function(err, result) {
 
         if (err) {
